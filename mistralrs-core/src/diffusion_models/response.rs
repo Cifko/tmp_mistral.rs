@@ -27,12 +27,19 @@ pub async fn send_responses(
             .unwrap_or(ImageGenerationResponseFormat::Url)
         {
             ImageGenerationResponseFormat::Url => {
-                let saved_path = format!("image-generation-{}.png", Uuid::new_v4());
+                // Make sure the output directory exists.
+                std::fs::create_dir_all("outputs")
+                    .map_err(|e| candle_core::Error::Msg(e.to_string()))?;
+                // Save the image to the output directory.
+                let saved_path = format!("outputs/image-generation-{}.png", Uuid::new_v4());
                 image
                     .save_with_format(&saved_path, image::ImageFormat::Png)
                     .map_err(|e| candle_core::Error::Msg(e.to_string()))?;
+                //TODO: remove hardcoded IP
+                let url = format!("http://35.202.64.111:50000/{}", saved_path);
+
                 ImageChoice {
-                    url: Some(saved_path),
+                    url: Some(url),
                     b64_json: None,
                 }
             }

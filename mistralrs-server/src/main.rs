@@ -36,6 +36,7 @@ use crate::{
 
 use interactive_mode::interactive_mode;
 use tower_http::cors::{AllowOrigin, CorsLayer};
+use tower_http::services::ServeDir;
 use tracing::{info, warn};
 use utoipa::{OpenApi, ToSchema};
 use utoipa_swagger_ui::SwaggerUi;
@@ -255,6 +256,7 @@ fn get_router(state: Arc<MistralRs>) -> Router {
 
     Router::new()
         .merge(SwaggerUi::new("/docs").url("/api-doc/openapi.json", doc))
+        .nest_service("/outputs", ServeDir::new("outputs"))
         .route("/v1/chat/completions", post(chatcompletions))
         .route("/v1/completions", post(completions))
         .route("/v1/models", get(models))
