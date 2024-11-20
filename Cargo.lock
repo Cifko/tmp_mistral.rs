@@ -392,8 +392,8 @@ checksum = "9ac0150caa2ae65ca5bd83f25c7de183dea78d4d366469f148435e2acfbad0da"
 
 [[package]]
 name = "candle-core"
-version = "0.7.2"
-source = "git+https://github.com/EricLBuehler/candle.git?rev=2d3df4a#2d3df4a8f3e52240a92be330a41f848dbc38f930"
+version = "0.8.0"
+source = "git+https://github.com/EricLBuehler/candle.git?rev=cb8082b#cb8082bf28eadb4140c1774f002983a6d182bf3e"
 dependencies = [
  "accelerate-src",
  "byteorder",
@@ -423,8 +423,8 @@ dependencies = [
 
 [[package]]
 name = "candle-flash-attn"
-version = "0.7.2"
-source = "git+https://github.com/EricLBuehler/candle.git?rev=2d3df4a#2d3df4a8f3e52240a92be330a41f848dbc38f930"
+version = "0.8.0"
+source = "git+https://github.com/EricLBuehler/candle.git?rev=cb8082b#cb8082bf28eadb4140c1774f002983a6d182bf3e"
 dependencies = [
  "anyhow",
  "bindgen_cuda 0.1.5",
@@ -434,16 +434,16 @@ dependencies = [
 
 [[package]]
 name = "candle-kernels"
-version = "0.7.2"
-source = "git+https://github.com/EricLBuehler/candle.git?rev=2d3df4a#2d3df4a8f3e52240a92be330a41f848dbc38f930"
+version = "0.8.0"
+source = "git+https://github.com/EricLBuehler/candle.git?rev=cb8082b#cb8082bf28eadb4140c1774f002983a6d182bf3e"
 dependencies = [
  "bindgen_cuda 0.1.5",
 ]
 
 [[package]]
 name = "candle-metal-kernels"
-version = "0.7.2"
-source = "git+https://github.com/EricLBuehler/candle.git?rev=2d3df4a#2d3df4a8f3e52240a92be330a41f848dbc38f930"
+version = "0.8.0"
+source = "git+https://github.com/EricLBuehler/candle.git?rev=cb8082b#cb8082bf28eadb4140c1774f002983a6d182bf3e"
 dependencies = [
  "metal 0.27.0",
  "once_cell",
@@ -453,8 +453,8 @@ dependencies = [
 
 [[package]]
 name = "candle-nn"
-version = "0.7.2"
-source = "git+https://github.com/EricLBuehler/candle.git?rev=2d3df4a#2d3df4a8f3e52240a92be330a41f848dbc38f930"
+version = "0.8.0"
+source = "git+https://github.com/EricLBuehler/candle.git?rev=cb8082b#cb8082bf28eadb4140c1774f002983a6d182bf3e"
 dependencies = [
  "accelerate-src",
  "candle-core",
@@ -2287,10 +2287,12 @@ dependencies = [
  "float8",
  "half",
  "lazy_static",
+ "metal 0.27.0",
  "once_cell",
  "paste",
  "rayon",
  "serde",
+ "thiserror",
  "tracing",
 ]
 
@@ -2312,6 +2314,7 @@ dependencies = [
  "intel-mkl-src",
  "mistralrs-core",
  "once_cell",
+ "regex",
  "reqwest",
  "serde",
  "serde_json",
@@ -3987,9 +3990,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokenizers"
-version = "0.19.1"
+version = "0.20.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e500fad1dd3af3d626327e6a3fe5050e664a6eaa4708b8ca92f1794aaf73e6fd"
+checksum = "67b67c92f6d705e2a1d106fb0b28c696f9074901a9c656ee5d9f5de204c39bf7"
 dependencies = [
  "aho-corasick",
  "derive_builder",

@@ -351,7 +351,7 @@ pub struct Llama {
     blocks: Vec<Block>,
     ln_f: RmsNorm,
     lm_head: Arc<dyn QuantMethod>,
-    kv_cache: crate::pipeline::Cache,
+    kv_cache: crate::pipeline::EitherCache,
     device: Device,
     mapper: Box<dyn DeviceMapper + Send + Sync>,
     rope_parameters: (Tensor, Tensor),
@@ -447,7 +447,10 @@ impl Llama {
             blocks,
             ln_f,
             lm_head: Arc::new(UnquantLinear::new(QuantMethodConfig::Unquantized(lm_head))?),
-            kv_cache: crate::pipeline::Cache::new(cfg.num_hidden_layers, false),
+            kv_cache: crate::pipeline::EitherCache::Full(crate::pipeline::Cache::new(
+                cfg.num_hidden_layers,
+                false,
+            )),
             device: normal_loading_metadata.real_device,
             mapper,
             rope_parameters,
@@ -509,15 +512,14 @@ impl LLaVALLM for Llama {
         flash_params: &FlashParams,
     ) -> Result<Tensor> {
         let mut x = input_embed;
-        let mut cache = self.kv_cache.lock();
-        let mask = CausalMasker.make_causal_mask_as_attn_bias(
+        let mut cache = self.kv_cache.full().lock();
+        let mask = CausalMasker.make_causal_mask_matrix(
             input_ids,
             metadata
                 .as_ref()
                 .map(|(_, _)| &seqlen_offsets as &dyn PastKvLenCache)
                 .unwrap_or(&*cache as &dyn PastKvLenCache),
             x.dtype(),
-            self.blocks[0].attn.num_attention_heads,
         )?;
         for (block_idx, block) in self.blocks.iter().enumerate() {
             x = self.mapper.map(x, block_idx)?;
@@ -582,7 +584,7 @@ impl NormalModel for Llama {
     ) -> Result<Tensor> {
         unimplemented!()
     }
-    fn cache(&self) -> &crate::pipeline::Cache {
+    fn cache(&self) -> &crate::pipeline::EitherCache {
         &self.kv_cache
     }
     fn device(&self) -> &Device {

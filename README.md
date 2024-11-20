@@ -40,6 +40,12 @@ Please submit requests for new models [here](https://github.com/EricLBuehler/mis
     ./mistralrs-server -i vision-plain -m lamm-mit/Cephalo-Llama-3.2-11B-Vision-Instruct-128k -a vllama
     ```
 
+- 🌟📷 Run the **Qwen2-VL** Model: [documentation and guide here](docs/QWEN2VL.md)
+
+    ```
+    ./mistralrs-server -i vision-plain -m Qwen/Qwen2-VL-2B-Instruct -a qwen2vl
+    ```
+
 - 🔥🧠 AnyMoE: Build a memory-efficient MoE model from anything, in seconds
 
     ```
@@ -143,6 +149,7 @@ https://github.com/EricLBuehler/mistral.rs/assets/65165915/09d9a30f-1e22-4b9a-90
 |LLaVa Next|✅| |✅|✅|
 |LLaVa|✅| |✅|✅|
 |Llama 3.2 Vision|✅| |✅| |
+|Qwen2-VL|✅| |✅| |
 
 ## APIs and Integrations
 
@@ -407,6 +414,7 @@ If you do not specify the architecture, an attempt will be made to use the model
 - `llava_next`
 - `llava`
 - `vllama`
+- `qwen2vl`
 
 ### Supported GGUF architectures
 

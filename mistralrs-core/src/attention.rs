@@ -92,24 +92,31 @@ fn naive_sdpa(
     head_dim: usize,
     sdpa_params: &SdpaParams,
 ) -> Result<Tensor> {
-    let mut att = MatMul.matmul_affine_div(
-        &q.contiguous()?,
-        &k.t()?.contiguous()?,
-        (head_dim as f64).sqrt(),
-    )?;
-    if let Some(softcap) = sdpa_params.softcap {
-        att = (att / softcap as f64)?;
-        att = att.tanh()?;
-        att = (att * softcap as f64)?;
-    }
+    if let Some(mask) = mask {
+        let mut att = MatMul.matmul(q, &k.t()?)?;
+        if let Some(softcap) = sdpa_params.softcap {
+            att = (att / softcap as f64)?;
+            att = att.tanh()?;
+            att = (att * softcap as f64)?;
+        }
 
-    let att = match mask {
-        Some(m) => att.broadcast_add(m)?,
-        None => att,
-    };
-    let att = candle_nn::ops::softmax_last_dim(&att)?;
-    // Convert to contiguous as matmul doesn't support strided vs for now.
-    MatMul.matmul(&att, &v.contiguous()?)
+        let att = candle_nn::ops::attn_softmax_last_dim(&att, mask, 1. / (head_dim as f32).sqrt())?;
+        MatMul.matmul(&att, v)
+    } else {
+        let mut att = MatMul.matmul_affine_div(q, &k.t()?, (head_dim as f64).sqrt())?;
+        if let Some(softcap) = sdpa_params.softcap {
+            att = (att / softcap as f64)?;
+            att = att.tanh()?;
+            att = (att * softcap as f64)?;
+        }
+
+        let att = match mask {
+            Some(m) => att.broadcast_add(m)?,
+            None => att,
+        };
+        let att = candle_nn::ops::softmax_last_dim(&att)?;
+        MatMul.matmul(&att, v)
+    }
 }
 
 pub struct SdpaParams {
@@ -163,8 +170,8 @@ impl Sdpa {
             );
         }
 
-        let k = repeat_kv(k.clone(), sdpa_params.n_kv_groups)?.contiguous()?;
-        let v = repeat_kv(v.clone(), sdpa_params.n_kv_groups)?.contiguous()?;
+        let k = repeat_kv(k.clone(), sdpa_params.n_kv_groups)?;
+        let v = repeat_kv(v.clone(), sdpa_params.n_kv_groups)?;
         if let (Device::Cuda(_), Some(cublaslt)) = (q.device(), *CUBLASLT_HANDLE.lock().unwrap()) {
             if !get_use_matmul_via_f16() {
                 #[cfg(feature = "cuda")]
