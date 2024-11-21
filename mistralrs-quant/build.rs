@@ -7,24 +7,7 @@ fn main() {
 
         println!("cargo:rerun-if-changed=build.rs");
 
-        let compute_cap = {
-            let mut cmd = Command::new("nvidia-smi");
-            let output = String::from_utf8(
-                cmd.args(["--query-gpu=compute_cap", "--format=csv"])
-                    .output()
-                    .expect("Failed to get compute cap")
-                    .stdout,
-            )
-            .expect("Output of nvidia-smi was not utf8.");
-            (output
-                .split('\n')
-                .nth(1)
-                .unwrap()
-                .trim()
-                .parse::<f32>()
-                .unwrap()
-                * 100.) as usize
-        };
+        let compute_cap = 890;
 
         // ======== Handle optional marlin kernel compilation
         let compile_marlin = compute_cap >= 800;
